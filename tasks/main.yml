@@ -2,13 +2,11 @@
 # tasks file for acl_directory
 
 - name: "Drop ACL on '{{ directory }}'"
-  tags: [ acl ]
   changed_when: false
   ansible.builtin.command:
     cmd: "setfacl -Rb '{{ directory }}'"
 
 - name: "Drop to 'root:root rw-rw----' for clean slate on '{{ directory }}'"
-  tags: [ acl ]
   ansible.builtin.file:
     path: "{{ directory }}"
     state: directory
@@ -17,7 +15,6 @@
     mode: ug=rw,o=-
 
 - name: "Set +X on '{{ directory }}'"
-  tags: [ acl ]
   ansible.builtin.file:
     path: "{{ directory }}"
     state: directory
@@ -26,7 +23,6 @@
     mode: ug+X
 
 - name: "Set 'group:{{ group }}:rwX' ACL for group '{{ group }}' on '{{ directory }}'"  # noqa: name[template]
-  tags: [ acl ]
   ansible.posix.acl:
     path: "{{ directory }}"
     entity: "{{ group }}"
@@ -37,7 +33,6 @@
     state: present
 
 - name: Set 'default:group:"{{ group }}":rwX' ACL for group '"{{ group }}"' on '{{ directory }}'  # noqa: name[template]
-  tags: [ acl ]
   ansible.posix.acl:
     path: "{{ directory }}"
     entity: "{{ group }}"
