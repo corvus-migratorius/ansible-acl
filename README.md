@@ -1,17 +1,17 @@
-template
+Role Name
 =========
 
-Template for Ansible role monorepos
+Set ACL on the given directory (consider merging with `mkdir` role).
 
 Requirements
 ------------
 
-None
+`acl` package should be installed on the target system.
 
 Role Variables
 --------------
 
-None
+`directory`: path to the directory that ACL will be set on.
 
 Dependencies
 ------------
@@ -23,7 +23,8 @@ Example Playbook
 
 ```yaml
 roles:
-    - role: genlab.template
+  - role: acl_directory
+-   directory: /path/to/my/dir
 ```
 
 License
@@ -34,4 +35,4 @@ BSD
 Author Information
 ------------------
 
-corvus-migratorius@proton.me
+An optional section for the role authors to include contact information, or a website (HTML is not allowed).
