@@ -1,5 +1,50 @@
 ---
 - name: Converge
   hosts: all
+
+  pre_tasks:
+
+  - name: add user
+    ansible.builtin.user:
+      name: user01
+      shell: /bin/bash
+    
+  - name: Ensure group teacher exists
+    ansible.builtin.group:
+      name: teacher
+      state: present
+  
+  - name: install ACL utilities and libraries
+    ansible.builtin.apt:
+      name: acl
+      update_cache: yes
+      state: present
+
+  - name: check if dir exists
+    ansible.builtin.stat:
+      path: /etc/acl_test
+      get_attributes: false
+    register: acl_check_dir_exist
+
+  - name: create a dir
+    ansible.builtin.file:
+      path: /etc/acl_test
+      state: directory
+      owner: user01
+      group: user01
+      mode: 0755
+    when: not acl_check_dir_exist.stat.exists
+      
+
+  - name: create a file
+    ansible.builtin.file:
+      path: /etc/acl_test/file.txt
+      state: touch
+      owner: user01
+      group: user01
+      mode: 0644
+
   roles:
-    - role: genlab.acl
+    - role: genlab.acl_directory
+      directory: /etc/acl_test
+      group: teacher
