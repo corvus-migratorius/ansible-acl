@@ -22,7 +22,7 @@
     - name: Assert that ACLs are correct set
       ansible.builtin.assert:
         that:
-          - "'group:teacher:rwx' in file2_acl.acl"
+          - "'group:teacher:rwx\t#effective:rw-' in file2_acl.acl"
           - "'group:teacher:rwx' in dir_acl.acl"
           - "'default:group:teacher:rwx' in dir_acl.acl" 
   
