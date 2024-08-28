@@ -4,42 +4,42 @@
 
   pre_tasks:
 
-  - name: Add test user
-    ansible.builtin.user:
-      name: user01
-      shell: /bin/bash
-    
-  - name: Ensure test group teacher exists
-    ansible.builtin.group:
-      name: teacher
-      state: present
-  
-  - name: Install ACL utilities and libraries
-    ansible.builtin.apt:
-      name: acl
-      update_cache: yes
-      state: present
-
-  - name: Check if dir exists
-    ansible.builtin.stat:
-      path: /etc/acl_test
-      get_attributes: false
-    register: acl_check_dir_exist
-
-  - name: Create a test dir
-    ansible.builtin.file:
-      path: /etc/acl_test
-      state: directory
-      owner: user01
-      group: user01
-      mode: 0755
-    when: not acl_check_dir_exist.stat.exists
+    - name: Add test user
+      ansible.builtin.user:
+        name: user01
+        shell: /bin/bash
       
+    - name: Ensure test group teacher exists
+      ansible.builtin.group:
+        name: teacher
+        state: present
+    
+    - name: Install ACL utilities and libraries
+      ansible.builtin.apt:
+        name: acl
+        update_cache: yes
+        state: present
 
-  - name: Create a test file
-    ansible.builtin.command:
-      cmd: "touch /etc/acl_test/file1.txt"
-    changed_when: false
+    - name: Check if dir exists
+      ansible.builtin.stat:
+        path: /etc/acl_test
+        get_attributes: false
+      register: acl_check_dir_exist
+
+    - name: Create a test dir
+      ansible.builtin.file:
+        path: /etc/acl_test
+        state: directory
+        owner: user01
+        group: user01
+        mode: 0755
+      when: not acl_check_dir_exist.stat.exists
+        
+
+    - name: Create a test file
+      ansible.builtin.command:
+        cmd: "touch /etc/acl_test/file1.txt"
+      changed_when: false
 
   roles:
     - role: genlab.acl_directory
