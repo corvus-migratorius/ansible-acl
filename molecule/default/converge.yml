@@ -8,16 +8,16 @@
       ansible.builtin.user:
         name: user01
         shell: /bin/bash
-      
+
     - name: Ensure test group teacher exists
       ansible.builtin.group:
         name: teacher
         state: present
-    
+
     - name: Install ACL utilities and libraries
       ansible.builtin.apt:
         name: acl
-        update_cache: yes
+        update_cache: true
         state: present
 
     - name: Check if dir exists
@@ -34,7 +34,6 @@
         group: user01
         mode: 0755
       when: not acl_check_dir_exist.stat.exists
-        
 
     - name: Create a test file
       ansible.builtin.command:

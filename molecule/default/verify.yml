@@ -24,5 +24,4 @@
         that:
           - "'group:teacher:rwx\t#effective:rw-' in file2_acl.acl"
           - "'group:teacher:rwx' in dir_acl.acl"
-          - "'default:group:teacher:rwx' in dir_acl.acl" 
-  
+          - "'default:group:teacher:rwx' in dir_acl.acl"

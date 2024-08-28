@@ -51,4 +51,3 @@
     permissions: rwX
     state: present
   when: not acl_set_default
-  
