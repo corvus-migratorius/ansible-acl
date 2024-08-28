@@ -5,7 +5,24 @@
   any_errors_fatal: true
 
   tasks:
-    - name: "Mock verification task"
-      changed_when: false
+    - name: Create new file in /etc/acl_test
       ansible.builtin.command:
-        cmd: "true"
+        cmd: "touch /etc/acl_test/file2.txt "
+
+    - name: Get file2.txt ACL
+      ansible.posix.acl:
+        path: /etc/acl_test/file2.txt
+      register: file2_acl
+
+    - name: Get /etc/acl_test ACL
+      ansible.posix.acl:
+        path: /etc/acl_test
+      register: dir_acl
+
+    - name: Assert that ACLs are correct set
+      ansible.builtin.assert:
+        that:
+          - "'group:teacher:rwx' in file2_acl.acl"
+          - "'group:teacher:rwx' in dir_acl.acl"
+          - "'default:group:teacher:rwx' in dir_acl.acl" 
+  
