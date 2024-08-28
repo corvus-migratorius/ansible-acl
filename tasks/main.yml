@@ -1,26 +1,30 @@
 ---
 # tasks file for acl_directory
 
-- name: "Drop ACL on '{{ directory }}'"
-  changed_when: false
+- name: "Check if ACLs are present on '{{ directory }}'"
   ansible.builtin.command:
-    cmd: "setfacl -Rb '{{ directory }}'"
+    cmd: "getfacl --absolute-names '{{ directory }}' "
+  register: current_acls
+  changed_when: false
 
-- name: "Drop to 'root:root rw-rw----' for clean slate on '{{ directory }}'"
+- name: "Check current permissions on '{{ directory }}'"
+  ansible.builtin.stat:
+    path: "{{ directory }}"
+  register: dir_permission
+  changed_when: false
+
+- name: "Drop to 'root:root rw-rw----' for clean state on '{{ directory }}'"
   ansible.builtin.file:
     path: "{{ directory }}"
     state: directory
     owner: root
     group: root
-    mode: ug=rw,o=-
+    mode: ug=rwX,o=-
+  when: dir_permission.stat.mode != '0770'
 
-- name: "Set +X on '{{ directory }}'"
-  ansible.builtin.file:
-    path: "{{ directory }}"
-    state: directory
-    owner: root
-    group: root
-    mode: ug+X
+- name: "Check if ACL for group '{{ group }}' is already set"
+  ansible.builtin.set_fact:
+    acl_set: "{{ 'group:' + group + ':rwx' in current_acls.stdout_lines }}"
 
 - name: "Set 'group:{{ group }}:rwX' ACL for group '{{ group }}' on '{{ directory }}'"  # noqa: name[template]
   ansible.posix.acl:
@@ -31,6 +35,11 @@
     recursive: true
     permissions: rwX
     state: present
+  when: not acl_set
+
+- name: "Check if default ACL for group '{{ group }}' is already set"
+  ansible.builtin.set_fact:
+    acl_set_default: "{{ 'default:group:' + group + ':rwx' in current_acls.stdout_lines }}"
 
 - name: Set 'default:group:"{{ group }}":rwX' ACL for group '"{{ group }}"' on '{{ directory }}'  # noqa: name[template]
   ansible.posix.acl:
@@ -41,3 +50,4 @@
     recursive: true
     permissions: rwX
     state: present
+  when: not acl_set_default
