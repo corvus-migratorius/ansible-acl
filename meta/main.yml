@@ -1,7 +1,7 @@
 ---
 galaxy_info:
   namespace: genlab
-  role_name: acl
+  role_name: acl_directory
   author: "Alexander Gorelyshev"
   company: "Genlab, LLC"
   description: "Set ACL on the given directory"
