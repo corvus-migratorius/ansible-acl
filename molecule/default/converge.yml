@@ -37,7 +37,7 @@
 
     - name: Create a test file
       ansible.builtin.command:
-        cmd: "touch /etc/acl_test/file1.txt"
+        cmd: "touch /etc/acl_test/file0.txt"
       changed_when: false
 
   roles:
