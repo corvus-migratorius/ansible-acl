@@ -7,21 +7,6 @@
   register: current_acls
   changed_when: false
 
-- name: "Check current permissions on '{{ directory }}'"
-  ansible.builtin.stat:
-    path: "{{ directory }}"
-  register: dir_permission
-  changed_when: false
-
-- name: "Drop to 'root:root rw-rw----' for clean state on '{{ directory }}'"
-  ansible.builtin.file:
-    path: "{{ directory }}"
-    state: directory
-    owner: root
-    group: root
-    mode: ug=rwX,o=-
-  when: dir_permission.stat.mode != '0770'
-
 - name: "Check if ACL for group '{{ group }}' is already set"
   ansible.builtin.set_fact:
     acl_set: "{{ 'group:' + group + ':rwx' in current_acls.stdout_lines }}"
