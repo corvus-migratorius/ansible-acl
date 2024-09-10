@@ -6,6 +6,7 @@
 
   tasks:
     - name: Create new dirs and files in /etc/acl_test
+      changed_when: false
       ansible.builtin.shell: |
         mkdir -p /etc/acl_test/dir2/dir3
         touch /etc/acl_test/file1.txt /etc/acl_test/dir2/file2.txt /etc/acl_test/dir2/dir3/file3
