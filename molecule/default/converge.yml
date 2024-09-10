@@ -44,3 +44,5 @@
     - role: genlab.acl_directory
       directory: /etc/acl_test
       group: teacher
+      permission: rX
+
