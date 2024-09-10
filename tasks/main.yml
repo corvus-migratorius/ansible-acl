@@ -1,4 +1,37 @@
 ---
-- name: "Mock task"
-  ansible.builtin.debug:
-    msg: "hello, world!"
+
+- name: "Check if ACLs are present on '{{ directory }}'"
+  changed_when: false
+  ansible.builtin.command:
+    cmd: "getfacl --absolute-names '{{ directory }}' "
+  register: current_acls
+
+- name: "Check if ACL for group '{{ group }}' is already set"
+  ansible.builtin.set_fact:
+    acl_set: "{{ 'group:' + group + ':' + permission in current_acls.stdout_lines }}"
+
+- name: "Set 'group:{{ group }}:{{ permission}}' ACL for group '{{ group }}' on '{{ directory }}'"
+  when: not acl_set
+  ansible.posix.acl:
+    path: "{{ directory }}"
+    entity: "{{ group }}"
+    etype: group
+    recalculate_mask: mask
+    recursive: true
+    permissions: "{{ permission }}"
+    state: present
+
+- name: "Check if default ACL for group '{{ group }}' is already set"
+  ansible.builtin.set_fact:
+    acl_set_default: "{{ 'default:group:' + group + ':' + permission in current_acls.stdout_lines }}"
+
+- name: "Set 'default:group:{{ group }}:{{ permission }}' ACL for group '{{ group }}' on '{{ directory }}"
+  when: not acl_set_default
+  ansible.posix.acl:
+    path: "{{ directory }}"
+    entity: "{{ group }}"
+    etype: group
+    default: true
+    recursive: true
+    permissions: "{{ permission }}"
+    state: present

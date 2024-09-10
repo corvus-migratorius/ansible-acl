@@ -5,7 +5,51 @@
   any_errors_fatal: true
 
   tasks:
-    - name: "Mock verification task"
+    - name: Create new dirs and files in /etc/acl_test
       changed_when: false
-      ansible.builtin.command:
-        cmd: "true"
+      ansible.builtin.shell: |
+        mkdir -p /etc/acl_test/dir2/dir3
+        touch /etc/acl_test/file1.txt /etc/acl_test/dir2/file2.txt /etc/acl_test/dir2/dir3/file3
+
+    - name: Get file1.txt ACL
+      ansible.posix.acl:
+        path: /etc/acl_test/file1.txt
+      register: file1_acl
+
+    - name: Get /etc/acl_test ACL
+      ansible.posix.acl:
+        path: /etc/acl_test
+      register: dir_acl
+
+    - name: Get /etc/acl_test/dir2 ACL
+      ansible.posix.acl:
+        path: /etc/acl_test/dir2
+      register: dir2_acl
+
+    - name: Get file2.txt ACL
+      ansible.posix.acl:
+        path: /etc/acl_test/dir2/file2.txt
+      register: file2_acl
+
+    - name: Get /etc/acl_test/dir2/dir3 ACL
+      ansible.posix.acl:
+        path: /etc/acl_test/dir2/dir3
+      register: dir3_acl
+
+    - name: Get /etc/acl_test/dir2/dir3/file3 ACL
+      ansible.posix.acl:
+        path: /etc/acl_test/dir2/dir3/file3
+      register: file3_acl
+
+    - name: Assert that ACLs are correct set
+      ansible.builtin.assert:
+        that:
+          - "'group:teacher:r-x\t#effective:r--' in file1_acl.acl"
+          - "'group:teacher:r-x\t#effective:r--' in file2_acl.acl"
+          - "'group:teacher:r-x\t#effective:r--' in file3_acl.acl"
+          - "'group:teacher:r-x' in dir_acl.acl"
+          - "'default:group:teacher:r-x' in dir_acl.acl"
+          - "'group:teacher:r-x' in dir2_acl.acl"
+          - "'default:group:teacher:r-x' in dir2_acl.acl"
+          - "'group:teacher:r-x' in dir3_acl.acl"
+          - "'default:group:teacher:r-x' in dir3_acl.acl"
