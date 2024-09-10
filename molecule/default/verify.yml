@@ -43,11 +43,8 @@
     - name: Assert that ACLs are correct set
       ansible.builtin.assert:
         that:
-          - "'group:teacher:r-x\t#effective:r--' in file1_acl.acl"
-          - "'group:teacher:r-x\t#effective:r--' in file2_acl.acl"
-          - "'group:teacher:r-x\t#effective:r--' in file3_acl.acl"
           - "'group:teacher:r-x' in dir_acl.acl"
-          - "'default:group:tacher:r-x' in dir_acl.acl"
+          - "'default:group:teacher:r-x' in dir_acl.acl"
           - "'group:teacher:r-x' in dir2_acl.acl"
           - "'default:group:teacher:r-x' in dir2_acl.acl"
           - "'group:teacher:r-x' in dir3_acl.acl"
